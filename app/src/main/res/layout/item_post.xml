@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="16dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <LinearLayout
+        android:id="@+id/ln_container"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="72dp"
+        android:layout_marginRight="56dp"
+        android:layout_centerVertical="true">
+
+        <TextView
+            android:id="@+id/txt_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:paddingBottom="3dp"
+            android:layout_centerVertical="true"
+            android:fontFamily="@string/roboto_regular_font_family"/>
+
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Title of this post"
+            android:textSize="14sp"
+            android:paddingBottom="3dp"
+            android:layout_below="@id/txt_name"
+            android:fontFamily="@string/roboto_regular_font_family"/>
+
+        <com.cunoraz.tagview.TagView
+            xmlns:tagview="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/tag_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            tagview:lineMargin="2dp"
+            tagview:tagMargin="2dp"
+            tagview:textPaddingLeft="4dp"
+            tagview:textPaddingTop="2dp"
+            tagview:textPaddingRight="4dp"
+            tagview:textPaddingBottom="2dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|right">
+            
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_time"
+                android:layout_marginRight="2dp"
+                android:scaleX="0.7"
+                android:scaleY="0.7"/>
+
+            <TextView
+                android:id="@+id/txt_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10/03/2017 - 15/03/2017"
+                android:textSize="11sp"
+                android:gravity="right"
+                android:layout_below="@id/txt_title"
+                android:fontFamily="@string/roboto_regular_font_family"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.facebook.login.widget.ProfilePictureView
+        android:id="@+id/img_user"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_alignTop="@id/ln_container"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_alignTop="@id/ln_container"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_dot_vertical"
+        android:background="@drawable/button_drawable"/>
+</RelativeLayout>
