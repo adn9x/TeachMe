@@ -1,4 +1,4 @@
-package com.hcat.teachme;
+package com.hcat.teachme.activity;
 
 import android.app.Activity;
 

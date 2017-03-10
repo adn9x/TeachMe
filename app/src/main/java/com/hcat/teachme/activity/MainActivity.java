@@ -1,21 +1,33 @@
-package com.hcat.teachme;
+package com.hcat.teachme.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.login.widget.ProfilePictureView;
+import com.hcat.teachme.ClickListener;
+import com.hcat.teachme.ListPostAdapter;
+import com.hcat.teachme.R;
+import com.hcat.teachme.RecyclerTouchListener;
+import com.hcat.teachme.RecyclerViewDivider;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,9 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 public class MainActivity extends Activity implements View.OnClickListener {
@@ -38,10 +48,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private TextView textName, textEmail;
     private DrawerLayout navigationBar;
     private TabHost tabHost;
-    private ListView listPost;
+    private RecyclerView listPost;
     private EditText editSearch;
     private TextView textPageTitle;
     private ImageButton buttonMenu, buttonBack, buttonSearch, buttonClear, buttonOption;
+    private ScaleAnimation editSearchShowAnimation, editSearchHideAnimation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,23 +95,89 @@ public class MainActivity extends Activity implements View.OnClickListener {
         tabHost.setup();
 
         TabHost.TabSpec tab1 = tabHost.newTabSpec("TAB_1");
-        tab1.setIndicator(getResources().getString(R.string.highlight_tab_title));
+        tab1.setIndicator(getResources().getString(R.string.teacher_tab_title));
         tab1.setContent(R.id.tab_1);
 
         TabHost.TabSpec tab2 = tabHost.newTabSpec("TAB_2");
-        tab2.setIndicator(getResources().getString(R.string.location_tab_title));
+        tab2.setIndicator(getResources().getString(R.string.find_teacher_tab_title));
         tab2.setContent(R.id.tab_2);
 
         tabHost.addTab(tab1);
         tabHost.addTab(tab2);
 
-        listPost = (ListView) findViewById(R.id.list_post);
+        listPost = (RecyclerView) findViewById(R.id.recycler_view);
+        listPost.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        listPost.setItemAnimator(new DefaultItemAnimator());
+        listPost.addItemDecoration(new RecyclerViewDivider(this, RecyclerViewDivider.VERTICAL_LIST));
         ListPostAdapter listPostAdapter = new ListPostAdapter(this, receivedIntent.getStringExtra(LoginActivity.KEY_FACEBOOK_ID));
         listPost.setAdapter(listPostAdapter);
+        listPost.addOnItemTouchListener(new RecyclerTouchListener(this, listPost, new ClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+//                Toast.makeText(this, )
+            }
 
+            @Override
+            public void onLongClick(View view, int position) {
 
-//        new GetTask().execute();
-        new PostTask().execute();
+            }
+        }){
+
+        });
+
+        editSearchShowAnimation = (ScaleAnimation) AnimationUtils.loadAnimation(this, R.anim.search_bar_show_aniamtion);
+        editSearchShowAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                editSearch.setVisibility(View.VISIBLE);
+                buttonClear.setVisibility(View.VISIBLE);
+                buttonBack.setVisibility(View.VISIBLE);
+
+                buttonMenu.setVisibility(View.INVISIBLE);
+                buttonSearch.setVisibility(View.INVISIBLE);
+                textPageTitle.setVisibility(View.INVISIBLE);
+
+                editSearch.requestFocus();
+                ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).showSoftInput(editSearch, InputMethodManager.SHOW_IMPLICIT);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        editSearchHideAnimation = (ScaleAnimation) AnimationUtils.loadAnimation(this, R.anim.search_bar_hide_aniamtion);
+        editSearchHideAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                editSearch.setText("");
+                editSearch.setVisibility(View.INVISIBLE);
+                editSearch.setVisibility(View.INVISIBLE);
+                buttonClear.setVisibility(View.INVISIBLE);
+                buttonBack.setVisibility(View.INVISIBLE);
+
+                buttonMenu.setVisibility(View.VISIBLE);
+                buttonSearch.setVisibility(View.VISIBLE);
+                textPageTitle.setVisibility(View.VISIBLE);
+                ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(editSearch.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_HIDDEN);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 
     @Override
@@ -112,12 +189,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
             break;
 
             case R.id.btn_back: {
-                setSearchBarVisibility(View.INVISIBLE);
+                editSearch.startAnimation(editSearchHideAnimation);
             }
             break;
 
             case R.id.btn_search: {
-                setSearchBarVisibility(View.VISIBLE);
+                editSearch.startAnimation(editSearchShowAnimation);
             }
             break;
 
@@ -142,27 +219,26 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private void setSearchBarVisibility(int visibility) {
-        int revertState;
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         if (visibility == View.VISIBLE) {
-            revertState = View.INVISIBLE;
-        } else {
-            revertState = View.VISIBLE;
-        }
-        editSearch.setVisibility(visibility);
-        buttonClear.setVisibility(visibility);
-        buttonBack.setVisibility(visibility);
+            editSearch.startAnimation(editSearchShowAnimation);
 
-        buttonMenu.setVisibility(revertState);
-        buttonSearch.setVisibility(revertState);
-        textPageTitle.setVisibility(revertState);
 
-        if (visibility == View.VISIBLE) {
-            editSearch.requestFocus();
             inputMethodManager.showSoftInput(editSearch, InputMethodManager.SHOW_IMPLICIT);
-        } else {
+        }else {
+            editSearch.startAnimation(editSearchHideAnimation);
+
+            editSearch.setVisibility(View.INVISIBLE);
+            buttonClear.setVisibility(View.INVISIBLE);
+            buttonBack.setVisibility(View.INVISIBLE);
+
+            buttonMenu.setVisibility(View.VISIBLE);
+            buttonSearch.setVisibility(View.VISIBLE);
+            textPageTitle.setVisibility(View.VISIBLE);
             inputMethodManager.hideSoftInputFromWindow(editSearch.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_HIDDEN);
+
         }
+
     }
 
     private class GetTask extends AsyncTask<String, String, String> {
@@ -225,7 +301,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                URL url = new URL("http://188.166.247.59:3000/");
+                URL url = new URL("http://188.166.247.59:3000/todo/create");
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setDoOutput(true);
                 httpURLConnection.setDoOutput(true);

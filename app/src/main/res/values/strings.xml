@@ -10,8 +10,8 @@
     <string name="notification_title">Notifications</string>
     <string name="settings_title">Settings</string>
     <string name="logout_title">Log out</string>
-    <string name="highlight_tab_title">Nổi Bật</string>
-    <string name="location_tab_title">Vị Trí</string>
+    <string name="teacher_tab_title">Gia sư</string>
+    <string name="find_teacher_tab_title">Tìm gia sư</string>
     <string name="roboto_regular_font_family">roboto-regular</string>
     <string name="math">Toán học</string>
     <string name="literature">Văn học</string>

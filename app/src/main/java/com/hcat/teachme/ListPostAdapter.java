@@ -1,14 +1,10 @@
 package com.hcat.teachme;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
-
-import com.cunoraz.tagview.TagView;
-import com.facebook.login.widget.ProfilePictureView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +14,7 @@ import java.util.List;
  * Created by Admin on 3/9/2017.
  */
 
-public class ListPostAdapter extends BaseAdapter {
+public class ListPostAdapter extends RecyclerView.Adapter<ItemPostViewHolder> {
     private List<ItemPost> listPosts;
     private Context context;
     private LayoutInflater mInflater;
@@ -44,55 +40,23 @@ public class ListPostAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
+    public int getItemCount() {
         return listPosts.size();
     }
 
     @Override
-    public ItemPost getItem(int position) {
-        return listPosts.get(position);
+    public ItemPostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View rootView = mInflater.inflate(R.layout.item_post, parent, false);
+        return new ItemPostViewHolder(rootView);
     }
 
     @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
-        if(convertView == null) {
-            convertView = mInflater.inflate(R.layout.item_post, parent, false);
-
-            viewHolder = new ViewHolder();
-            viewHolder.userAvatar = (ProfilePictureView) convertView.findViewById(R.id.img_user);
-            viewHolder.textName = (TextView) convertView.findViewById(R.id.txt_name);
-            viewHolder.textTitle = (TextView) convertView.findViewById(R.id.txt_title);
-            viewHolder.textDate = (TextView) convertView.findViewById(R.id.txt_date);
-            viewHolder.tagView = (TagView) convertView.findViewById(R.id.tag_group);
-
-            convertView.setTag(viewHolder);
-        }else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
-        setDataForItemView(viewHolder, position);
-        return convertView;
-    }
-
-    private void setDataForItemView(ViewHolder viewHolder, int position){
-        ItemPost currentItemPost = getItem(position);
-        viewHolder.userAvatar.setProfileId(currentItemPost.getFacebookId());
-        viewHolder.textName.setText(currentItemPost.getName());
-        viewHolder.textTitle.setText(currentItemPost.getPostTitle());
-        viewHolder.textDate.setText(currentItemPost.getStartDate()+" - "+currentItemPost.getEndDate());
-        viewHolder.tagView.addTags(currentItemPost.getListTags());
-    }
-
-    private class ViewHolder {
-        ProfilePictureView userAvatar;
-        TextView textName;
-        TextView textTitle;
-        TextView textDate;
-        TagView tagView;
+    public void onBindViewHolder(ItemPostViewHolder holder, int position) {
+        ItemPost currentItemPost = listPosts.get(position);
+        holder.userAvatar.setProfileId(currentItemPost.getFacebookId());
+        holder.textName.setText(currentItemPost.getName());
+        holder.textTitle.setText(currentItemPost.getPostTitle());
+        holder.textDate.setText(currentItemPost.getStartDate()+" - "+currentItemPost.getEndDate());
+        holder.tagView.addTags(currentItemPost.getListTags());
     }
 }

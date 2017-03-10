@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    tools:context="com.hcat.teachme.MainActivity">
+    tools:context="com.hcat.teachme.activity.MainActivity">
 
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/navigation_bar"
@@ -44,7 +44,7 @@
                             android:layout_height="match_parent"
                             android:orientation="vertical">
 
-                            <include layout="@layout/highlight_tab" />
+                            <include layout="@layout/teacher_tab" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -53,7 +53,7 @@
                             android:layout_height="match_parent"
                             android:orientation="vertical">
 
-                            <include layout="@layout/location_tab" />
+                            <include layout="@layout/find_teacher_tab" />
                         </LinearLayout>
                     </FrameLayout>
                 </LinearLayout>
