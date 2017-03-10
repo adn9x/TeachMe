@@ -2,8 +2,8 @@ var todo = require('./Models/todo');
 
 module.exports = {
     configure: function (app) {
-        app.get('/todo/getpost', function (req, res) {
-            todo.getPost(res);
+        app.get('/todo/getlistpost', function (req, res) {
+            todo.getListPost(res);
         });
 
         app.get('/todo/getsubject', function (req, res) {
@@ -11,7 +11,11 @@ module.exports = {
         });
 
         app.get('/todo/read/:id/', function (req, res) {
-            todo.read(res);
+            todo.read(req.params.id,res);
+        });
+
+        app.get('/todo/checkuser/:id/', function (req, res) {
+            todo.checkUser(req.params.id,res);
         });
 
         app.get('/todo/getpostinsub/:id/', function (req, res) {

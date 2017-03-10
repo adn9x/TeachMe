@@ -2,9 +2,9 @@ var connection = require('../connection');
 var mysql = require('mysql');
 
 function Todo() {
-    this.getPost = function (res) {
+    this.getListPost = function (res) {
         connection.acquire(function (err, con) {
-            con.query('select * from post', function (err, result) {
+            con.query('select idpost,title,tenmon from post,subject where post.idsubject = subject.idsubject', function (err, result) {
                 con.release();
                 res.send(result);
             });
@@ -38,9 +38,27 @@ function Todo() {
         });
     };
 
+    this.read = function (id, res) {
+        connection.acquire(function (err, con) {
+            con.query('select title,content,sdt,tienday,tenmon,name,idfb from post,account where post.idaccount=account.idaccount and idpost=?', [id], function (err, result) {
+                con.release();
+                res.send(result);
+            });
+        });
+    };
+
+    this.checkUser = function (idfb, res) {
+        connection.acquire(function (err, con) {
+            con.query('SELECT * FROM `account` WHERE idfb = ?', idfb, function (err, result) {
+                con.release();
+                res.send(result);
+            });
+        });
+    };
+
     this.createUser = function (field_data, res) {
-        var querySQL = "insert into account values(?,?,?)";
-        var table = [parseInt(field_data.idAccount),field_data.name,parseInt(field_data.idFB)];
+        var querySQL = "insert into account(name,email,gender,birthday,idfb) values(?,?,?,?,?)";
+        var table = [field_data.name,field_data.email,field_data.gender,field_data.birthday,field_data.idFB];
         querySQL = mysql.format(querySQL,table);
         connection.acquire(function (err, con) {
             con.query(querySQL , function (err, result) {
@@ -86,14 +104,6 @@ function Todo() {
         });
     };
 
-    this.read = function (id, res) {
-        connection.acquire(function (err, con) {
-            con.query('select * from post where id=?', [id], function (err, result) {
-                con.release();
-                res.send(result);
-            });
-        });
-    };
 
     this.delete = function (id, res) {
         connection.acquire(function (err, con) {
