@@ -9,7 +9,7 @@ function Connection() {
       host: 'localhost',
       user: 'root',
       password: '',
-      database: 'teachme'
+      database: 'TeachMe'
     });
   };
  
